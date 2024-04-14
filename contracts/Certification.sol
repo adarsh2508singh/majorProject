@@ -12,8 +12,10 @@ contract Certification {
 
     mapping(string => Certificate) public certificates;
     mapping(string => string) public uidToCertificateId; // New mapping to map uid to certificate id
+    mapping(string => bool) public validations; // New mapping to record validations
 
     event certificateGenerated(string certificate_id);
+    event certificateValidated(string certificate_id); // New event for validation
 
     function generateCertificate(
         string memory _certificate_id,
@@ -85,5 +87,20 @@ contract Certification {
         string memory _certificate_id
     ) public view returns (bool) {
         return bytes(certificates[_certificate_id].ipfs_hash).length != 0;
+    }
+
+    // New function to record validation
+    function recordValidation(string memory _certificate_id) public {
+        // Check if the certificate with the given ID exists
+        require(
+            bytes(certificates[_certificate_id].ipfs_hash).length != 0,
+            "Certificate with this ID does not exist"
+        );
+
+        // Record the validation
+        validations[_certificate_id] = true;
+
+        // Emit an event
+        emit certificateValidated(_certificate_id);
     }
 }

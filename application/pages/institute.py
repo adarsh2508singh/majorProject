@@ -59,27 +59,30 @@ if selected == options[0]:
 
     submit = form.form_submit_button("Submit")
     if submit:
-    # Check if a certificate with the given UID already exists
-        existing_certificate = contract.functions.getCertificateByUID(uid).call()
-        if existing_certificate:
-            st.error(f"A certificate with the UID {uid} already exists.")
+        try:
+            # Check if a certificate with the given UID already exists
+            existing_certificate = contract.functions.getCertificateByUID(uid).call()
+            if existing_certificate:
+                raise Exception(f"A certificate with the UID {uid} already exists.")
 
-        pdf_file_path = "certificate.pdf"
-        institute_logo_path = "../assets/logo.jpg"
-        generate_certificate(pdf_file_path, uid, candidate_name, course_name, org_name, institute_logo_path)
+            pdf_file_path = "certificate.pdf"
+            institute_logo_path = "../assets/logo.jpg"
+            generate_certificate(pdf_file_path, uid, candidate_name, course_name, org_name, institute_logo_path)
 
-        # Upload the PDF to Pinata
-        ipfs_hash = upload_to_pinata(pdf_file_path, api_key, api_secret)
-        if ipfs_hash is None:
-            st.error("Failed to upload file to Pinata.")
-        else:
-            os.remove(pdf_file_path)
-            data_to_hash = f"{uid}{candidate_name}{course_name}{org_name}".encode('utf-8')
-            certificate_id = hashlib.sha256(data_to_hash).hexdigest()
+            # Upload the PDF to Pinata
+            ipfs_hash = upload_to_pinata(pdf_file_path, api_key, api_secret)
+            if ipfs_hash is None:
+                raise Exception("Failed to upload file to Pinata.")
+            else:
+                os.remove(pdf_file_path)
+                data_to_hash = f"{uid}{candidate_name}{course_name}{org_name}".encode('utf-8')
+                certificate_id = hashlib.sha256(data_to_hash).hexdigest()
 
-            # Smart Contract Call
-            contract.functions.generateCertificate(certificate_id, uid, candidate_name, course_name, org_name, ipfs_hash).transact({'from': w3.eth.accounts[0]})
-            st.success(f"Certificate successfully generated with Certificate ID: {certificate_id}")
+                # Smart Contract Call
+                contract.functions.generateCertificate(certificate_id, uid, candidate_name, course_name, org_name, ipfs_hash).transact({'from': w3.eth.accounts[0]})
+                st.success(f"Certificate successfully generated with Certificate ID: {certificate_id}")
+        except Exception as e:
+            st.error(str(e))
 
 else:
     form = st.form("View-Certificate")

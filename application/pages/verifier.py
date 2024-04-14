@@ -1,3 +1,5 @@
+from web3 import Web3
+from connection import w3
 import streamlit as st
 import os
 import hashlib
@@ -34,10 +36,17 @@ if selected == options[0]:
             result = contract.functions.isVerified(certificate_id).call()
             if result:
                 st.success("Certificated validated successfully!")
-            else:
-                st.error("Invalid Certificate! Certificate might be tampered")
+                # Record validation
+                tx_hash = contract.functions.recordValidation(certificate_id).transact({'from': w3.eth.accounts[0]})
+                print("hello bsdk")
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+                print(receipt)
+                if receipt['status'] == 1:
+                    st.success("Validation recorded successfully!")
+                else:
+                    st.error("Failed to record validation!")
         except Exception as e:
-            st.error("Invalid Certificate! Certificate might be tampered")
+            st.error(f"Invalid Certificate! Certificate might be tampered. Error: {e}")
 
 elif selected == options[1]:
     form = st.form("Validate-Certificate")
@@ -50,6 +59,13 @@ elif selected == options[1]:
             result = contract.functions.isVerified(certificate_id).call()
             if result:
                 st.success("Certificated validated successfully!")
+                # Record validation
+                tx_hash = contract.functions.recordValidation(certificate_id).transact({'from': w3.eth.accounts[0]})
+                receipt = w3.eth.waitForTransactionReceipt(tx_hash)
+                if receipt['status'] == 1:
+                    st.success("Validation recorded successfully!")
+                else:
+                    st.error("Failed to record validation!")
             else:
                 st.error("Invalid Certificate ID!")
         except Exception as e:
