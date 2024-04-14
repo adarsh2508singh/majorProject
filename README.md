@@ -1,76 +1,173 @@
-# Blockchain-Based Certificate Validation System
+# Certificate Validation using Blockchain
 
-Welcome to the Certificate Validation System, a blockchain-based solution for generating and verifying digital certificates. This system leverages the Ethereum blockchain, IPFS via Pinata, Firebase, and Streamlit to provide a secure, decentralized, and user-friendly platform for certificate management.
+## Introduction
 
-## Table of Contents
-- [System Overview](#system-overview)
-- [Key Features](#key-features)
-- [Installation Guide](#installation-guide)
-  - [Local Setup](#local-setup)
-  - [Docker Setup](#docker-setup)
-- [Screenshots](#screenshots)
-- [License](#license)
+This project provides a Blockchain based solution for generating and verifying digital certificates. The certificate information (uid, candidate_name, course_name, org_name, ipfs_hash) is stored on the blockchain. First, the certificate pdf is generated and stored onto IPFS using Pinata service. Then, the IPFS hash obtained is stored on the blockchain along with other information.
 
-## System Overview
+The system comprises of 2 main entities:
+- **Institute**: Responsible for generating and issuing certificates. Has the functionality to generate and view certificates.
 
-The system is designed with two main entities in mind:
+- **Verifier**: Responsible for verifying certificates. Has the functionality to verify certificates by either uploading a certificate pdf or by inputting the certificate id.
 
-- **Institute**: The entity responsible for generating and issuing certificates. It has the ability to generate and view certificates.
-- **Verifier**: The entity responsible for verifying certificates. It can verify certificates by either uploading a certificate pdf or by inputting the certificate id.
+---
 
-## Key Features
+## Features
 
-- **Smart Contract**: A Solidity smart contract is used to manage and store certificate details on the Ethereum blockchain.
-- **IPFS Integration**: Certificate PDFs are stored on IPFS via Pinata for decentralized and secure file storage.
-- **Firebase Authentication**: Firebase is used for authentication.
-- **Streamlit App**: A user-friendly interface for generating and verifying certificates.
+- **Smart Contract:** Utilizes a Solidity smart contract to manage and store certificate details on the Ethereum blockchain.
+- **IPFS Integration:** Stores certificate PDFs on IPFS via Pinata for decentralized and secure file storage.
+- **Firebase Authentication:** Uses Firebase for authentication.
+- **Streamlit App:** Provides a user-friendly interface for generating and verifying certificates.
 
-## Installation Guide
+---
 
-You can set up the project either locally or using Docker. Here are the steps for both:
+## Getting Started
 
-### Local Setup
+Clone the repository using the command:
+```sh
+git clone https://github.com/Sahil181045/Certificate-Validation-System.git
+```
+You can run the project either through:
+- [Local Setup](#local-setup)
+- [Using Docker](#using-docker) (Recommended)
 
-#### Prerequisites
+---
 
-- Node version >= 21.0.0 (Truffle requires node version 16 or higher)
-- Python version >= 3.9.10
-- Globally installed packages for Truffle and Ganache-cli
-- Python packages (install from `application/requirements.txt`)
-- Firebase project setup
-- Pinata account setup
-- .env file setup
+## Local Setup
 
-#### Steps
+### Prerequisites
 
-1. Clone the repository.
-2. Install the necessary packages.
-3. Set up Firebase and Pinata.
-4. Create and configure the .env file.
-5. Start the Ganache blockchain.
-6. Compile and deploy the smart contracts.
-7. Launch the Streamlit app.
+- **Node version >= 21.0.0**  
+Truffle requires node version 16 or higher. The node version on my machine on which I tested this project was 21.0.0. You can try a lower node version (>=16.0).
 
-### Docker Setup
+- **Python version >= 3.9.10**  
+    Python version 3.9.10 or higher is recommended but other versions may also work.
 
-#### Prerequisites
+- **Globally installed packages for Truffle and Ganache-cli**  
 
-- Docker
+    ```sh
+    npm install -g truffle
+    ```
+    ```sh
+    npm install -g ganache-cli
+    ```
 
-#### Steps
+- **Python packages**  
+    In the project's root directory, exececute the command:
+    ```sh
+    pip install -r application/requirements.txt
+    ```
+    It is recommended to create a virtual environment and then install the requirements and run the streamlit application in that virtual environment.
 
-1. Start the Docker engine.
-2. Run the Docker compose command to start the containers.
-3. Access the app on your browser.
-4. Stop and remove the containers when done.
+- **Firebase project setup**  
+    Create a project on [Firebase Console](https://console.firebase.google.com/). This will be used to setup an authentication service in the project. Enable email/password sign in method under Authentication in the Build section.
+    Go to project settings. Add new app. Note the following details in a .env file inside the project's root directory.
+    ```sh
+    FIREBASE_API_KEY
+    FIREBASE_AUTH_DOMAIN
+    FIREBASE_DATABASE_URL (Set this to "")
+    FIREBASE_PROJECT_ID
+    FIREBASE_STORAGE_BUCKET
+    FIREBASE_MESSAGING_SENDER_ID
+    FIREBASE_APP_ID
+    ```
 
-## Screenshots
+- **Pinata account setup**  
+    Create an account on [Pinata](https://app.pinata.cloud/). Go to the API keys section and generate a new key. Note the API key and secret key in .env file.
 
-Here are some screenshots of the application:
+- **.env file**  
+    Finally your .env file should contain the following things:
 
-- Home Page
-- Login Page
-- Generate Certificate Page
-- View Certificate Page
-- Verify Certificate using Certificate ID
-- Verify Certificate using Certificate PDF
+    ```sh
+    PINATA_API_KEY = "<Your Pinata API key>"
+    PINATA_API_SECRET = "<Your Pinata Secret Key>"
+    FIREBASE_API_KEY = "<Your Firebase API key>"
+    FIREBASE_AUTH_DOMAIN = "<Your Firebase auth domain>"
+    FIREBASE_DATABASE_URL = ""
+    FIREBASE_PROJECT_ID = "<Your Firebase project id>"
+    FIREBASE_STORAGE_BUCKET = "<Your Firebase Storage Bucket>"
+    FIREBASE_MESSAGING_SENDER_ID = "<Your Firebase messaging sender id>"
+    FIREBASE_APP_ID = "<Your Firebase app id>"
+    institute_email = "institute@gmail.com" # Feel free to modify this
+    institute_password = "123456" # Feel free to modify this
+    ```
+    Note: This institute email and password in the .env file will be used to login as Institute inside the app.
+
+### Running the project
+
+1. Open a terminal anywhere and start the Ganache blockchain.
+    ```
+    ganache-cli -h 127.0.0.1 -p 8545
+    ```
+
+2. Open a new terminal in the project's root directory and execute the following command to compile and deploy the smart contracts.
+    ```sh
+    truffle migrate
+    ```
+
+3. Change the working directory to application directory inside the project's root directory.
+    ```sh
+    cd application
+    ```
+
+4. Launch the streamlit app.
+    ```sh
+    streamlit run app.py
+    ```
+
+5. You can now view the app on your browser running on [localhost:8501](https:localhost:8501).
+
+6. To stop the application, press Ctrl+C.
+
+---
+
+
+## Using Docker
+
+### Prerequisites
+
+- **Docker** 
+You can either download [Docker Desktop](https://www.docker.com/products/docker-desktop/) for Windows/Mac/Linux or on Linux you can install the docker package via a package manager.
+
+### Running the project
+
+1. Start the Docker engine by running the Docker Desktop application.
+
+2. Open a terminal in the project's root directory.
+
+3. Run the following command to start the 2 containers (ganache and streamlit-app).
+    ```sh
+    docker-compose up
+    ```
+
+4. You can now view the app on your browser running on [localhost:8501](https:localhost:8501).
+
+5. To stop and remove the containers, use the command:
+    ```sh
+    docker-compose down
+    ```
+
+    Note: The insitute email id is "institute@gmail.com" and password is "123456". You will require this for logging in as Institute for the process of Certificate generation.
+
+---
+
+## Additional Notes
+
+- The docker-compose.yml file provided first downloads the images for ganache and streamlit-app from Docker hub and then starts these containers using docker-compose up.
+
+- If you want to build your own images, I have provided the Dockerfiles for ganache (Dockerfile.ganache) and streamlit-app (Dockerfile.streamlit). Before building the images, first make the below changes in application/connection.py and truffle-config.js:
+
+    In **application/connection.py**, on line 6:
+    ```
+    w3 = Web3(Web3.HTTPProvider('http://ganache:8545'))
+    ```
+    
+    In **truffle-config.js**, on line 4:
+    ```
+    host: "ganache",
+    ```
+
+    This changes the host to "ganache" which is the service defined in docker-compose.yml.
+
+    After making these changes, you can build the images using `docker-compose build`. After this, you can use `docker-compose up` to start the containers and `docker-compose down` to stop them.
+
+---

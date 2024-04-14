@@ -11,6 +11,8 @@ contract Certification {
     }
 
     mapping(string => Certificate) public certificates;
+    mapping(string => string) public uidToCertificateId; // New mapping to map uid to certificate id
+
     event certificateGenerated(string certificate_id);
 
     function generateCertificate(
@@ -38,9 +40,14 @@ contract Certification {
 
         // Store the certificate in the mapping
         certificates[_certificate_id] = cert;
+        uidToCertificateId[_uid] = _certificate_id; // Map the uid to the certificate id
 
         // Emit an event
         emit certificateGenerated(_certificate_id);
+    }
+
+    function getCertificateByUID(string memory _uid) public view returns (string memory) {
+        return uidToCertificateId[_uid];
     }
 
     function getCertificate(
