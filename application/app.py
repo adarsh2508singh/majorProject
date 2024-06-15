@@ -13,7 +13,7 @@ st.sidebar.title('Navigation')
 selection = st.sidebar.radio("Go to", ['Home', 'Ganache Details'])
 
 if selection == 'Home':
-    st.title("Certificate Validation System")
+    st.title("Certificate Generation and Validation System")
     st.write("")
     st.subheader("Select Your Role")
 
